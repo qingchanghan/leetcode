@@ -39,3 +39,35 @@ public:
         return -1;
     }
 };
+
+/*
+    二分
+ */
+class Solution {
+public:
+    int findDuplicate(vector<int>& nums) {
+        int sz = nums.size();
+        int low = 1, high = -1;
+        for (int i = 0; i < sz; i++)
+            if (nums[i] > high)
+                high = nums[i];
+        
+        while (low < high) {
+            int mid = (low+high)/2;
+            int num = 0;
+            
+            for (int i = 0; i < sz; i++) {
+                if (nums[i] <= mid)
+                    num++;
+            }
+            // cout << mid << " " << num << endl;
+            if (num > mid) {
+                high = mid;
+            } else {
+                low = mid+1;
+            }
+        }
+        
+        return low;
+    }
+};
