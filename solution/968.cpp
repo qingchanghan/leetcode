@@ -83,3 +83,65 @@ public:
         return min(r0, r1);
     }
 };
+
+/*
+    贪心算法 20ms
+    - 如果一个节点的孩子都覆盖了，而且他有parent，那就在他的parent放camera
+    - 如果一个节点有孩子没被覆盖，那就在这放一个camera
+    - 如果一个节点没有parent，且他没有被覆盖，那就在这放一个camera
+ */
+class Solution {
+public:
+    
+    int res;
+    set<TreeNode*> covered;
+    
+    void dfs(TreeNode* root, TreeNode* parent) {
+        if (root != NULL) {
+            dfs(root->left, root);
+            dfs(root->right, root);
+            
+            if ((parent == NULL && covered.find(root) == covered.end()) ||
+                    covered.find(root->left) == covered.end() ||
+                    covered.find(root->right) == covered.end()) {
+                res++;
+                covered.insert(parent);
+                covered.insert(root);
+                covered.insert(root->left);
+                covered.insert(root->right);
+            }
+        }
+    }
+    
+    int minCameraCover(TreeNode* root) {
+        res = 0;
+        covered.insert(NULL);
+        
+        dfs(root, NULL);
+        return res;
+    }
+};
+
+/*
+    大神的贪心法
+    - 在所有叶子节点的parent处放置camera
+    - 对于叶节点返回0，对于叶节点的parent返回1，已经覆盖的节点返回2（相当于NULL）
+ */
+class Solution {
+public:
+    
+    int res = 0;
+    int minCameraCover(TreeNode* root) {
+        return (dfs(root) < 1 ? 1 : 0) + res;
+    }
+
+    int dfs(TreeNode* root) {
+        if (!root) return 2;
+        int left = dfs(root->left), right = dfs(root->right);
+        if (left == 0 || right == 0) {
+            res++;
+            return 1;
+        }
+        return left == 1 || right == 1 ? 2 : 0;
+    }
+};
